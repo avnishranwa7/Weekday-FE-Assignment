@@ -5,6 +5,7 @@ import { Grid } from "@mui/material";
 import classes from "./App.module.css";
 import JobPost from "./components/JobPost";
 import { JobData } from "./components/JobPost/types";
+import LoadingCard from "./components/LoadingCard";
 
 function getGridColumns() {
   const width = window.innerWidth;
@@ -38,19 +39,39 @@ const breakPoints = { xs: 12, sm: 6, md: 4, lg: 3, xl: 3 };
 
 function App() {
   const [jobData, setJobData] = useState<Array<JobData>>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   // fetches new data and append to existing data
-  const loadData = useCallback(() => {
-    getJobData(jobData.length).then((data) => setJobData(data.jdList));
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    const newData = await getJobData(jobData.length);
+    console.log(newData);
+    setLoading(false);
+    setJobData((prev) => [...prev, ...newData.jdList]);
   }, [jobData.length]);
+
+  // fetch more data when reached the end
+  const handleReachEnd = useCallback(() => {
+    if (
+      document.documentElement.clientHeight + window.scrollY >=
+      (document.documentElement.scrollHeight ||
+        document.documentElement.clientHeight)
+    )
+      loadData();
+  }, [loadData]);
 
   useEffect(() => {
     loadData();
-  }, [loadData]);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleReachEnd);
+    return () => window.removeEventListener("scroll", handleReachEnd);
+  }, [handleReachEnd, loadData]);
 
   return (
     <div className={classes.root}>
-      <Grid id="grid" container columnSpacing={1} rowSpacing={5}>
+      <Grid container columnSpacing={1} rowSpacing={5}>
         {jobData.map((job) => (
           <Grid
             key={job.jdUid}
@@ -62,6 +83,7 @@ function App() {
           </Grid>
         ))}
       </Grid>
+      {loading && <LoadingCard />}
     </div>
   );
 }
