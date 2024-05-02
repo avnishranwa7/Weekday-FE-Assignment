@@ -6,10 +6,15 @@ const LoadingCard = () => {
       sx={{
         position: "fixed",
         p: "4px 8px",
-        width: "fit-content",
+        width: "100px",
+        height: "30px",
         bottom: 10,
         left: "50%",
         transform: "translateX(-50%)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        fontSize: 20,
       }}
     >
       Loading...

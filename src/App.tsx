@@ -42,7 +42,7 @@ const breakPoints = { xs: 12, sm: 6, md: 4, lg: 3, xl: 3 };
 
 function App() {
   const [jobData, setJobData] = useState<Array<JobData>>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const [filters, setFilters] = useState<Filter>({
     roles: [],
     numberOfEmployees: [],
@@ -108,7 +108,7 @@ function App() {
           </Grid>
         ))}
       </Grid>
-      {filteredData.length === 0 && (
+      {!loading && filteredData.length === 0 && (
         <span className={classes.noJobs}>
           No jobs available for this category at the moment
         </span>
