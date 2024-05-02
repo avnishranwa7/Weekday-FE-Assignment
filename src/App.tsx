@@ -7,6 +7,8 @@ import JobPost from "./components/JobPost";
 import { JobData } from "./components/JobPost/types";
 import LoadingCard from "./components/LoadingCard";
 import Filters from "./components/Filters";
+import { Filter } from "./components/Filters/types";
+import { FilterFn } from "./components/Filters/helpers";
 
 function getGridColumns() {
   const width = window.innerWidth;
@@ -41,13 +43,25 @@ const breakPoints = { xs: 12, sm: 6, md: 4, lg: 3, xl: 3 };
 function App() {
   const [jobData, setJobData] = useState<Array<JobData>>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [filters, setFilters] = useState<Filter>({
+    roles: [],
+    numberOfEmployees: [],
+    experience: null,
+    remote: [],
+    minimumSalary: null,
+    company: "",
+  });
 
   // fetches new data and append to existing data
   const loadData = useCallback(async () => {
     setLoading(true);
-    const newData = await getJobData(jobData.length);
-    setLoading(false);
-    setJobData((prev) => [...prev, ...newData.jdList]);
+    try {
+      const newData = await getJobData(jobData.length);
+      setLoading(false);
+      setJobData((prev) => [...prev, ...newData.jdList]);
+    } catch (err) {
+      setLoading(false);
+    }
   }, [jobData.length]);
 
   // fetch more data when reached the end
@@ -74,11 +88,16 @@ function App() {
     [jobData]
   );
 
+  const filteredData = useMemo(
+    () => jobData.filter((job) => FilterFn(job, filters)),
+    [filters, jobData]
+  );
+
   return (
     <div className={classes.root}>
-      <Filters roles={roles} />
+      <Filters roles={roles} setFilters={setFilters} />
       <Grid container columnSpacing={1} rowSpacing={5}>
-        {jobData.map((job) => (
+        {filteredData.map((job) => (
           <Grid
             key={job.jdUid}
             item
@@ -89,6 +108,11 @@ function App() {
           </Grid>
         ))}
       </Grid>
+      {filteredData.length === 0 && (
+        <span className={classes.noJobs}>
+          No jobs available for this category at the moment
+        </span>
+      )}
       {loading && <LoadingCard />}
     </div>
   );
