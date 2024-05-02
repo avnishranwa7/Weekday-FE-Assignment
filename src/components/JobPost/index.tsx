@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { FC } from "react";
 import Card from "@mui/material/Card";
 
 // styles imports
@@ -25,32 +25,19 @@ function getCurrencySuffix(currencyCode: string) {
   return "k";
 }
 
-const JobPost = () => {
-  const [jobData, setJobData] = useState<JobData | undefined>(undefined);
+interface Props {
+  jobData: JobData;
+}
 
-  useEffect(() => {
-    fetch("https://api.weekday.technology/adhoc/getSampleJdJSON", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        limit: 10,
-        offset: 0,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => setJobData(data.jdList[0]));
-  }, []);
-
+const JobPost: FC<Props> = ({ jobData }) => {
   const minSalary =
-    (jobData?.minJdSalary ?? 10) +
-    (jobData?.salaryCurrencyCode
+    (jobData.minJdSalary ?? 10) +
+    (jobData.salaryCurrencyCode
       ? getCurrencySuffix(jobData.salaryCurrencyCode)
       : "");
   const maxSalary =
-    (jobData?.maxJdSalary ?? 15) +
-    (jobData?.salaryCurrencyCode
+    (jobData.maxJdSalary ?? 15) +
+    (jobData.salaryCurrencyCode
       ? getCurrencySuffix(jobData.salaryCurrencyCode)
       : "");
 
@@ -62,7 +49,12 @@ const JobPost = () => {
         display: "flex",
         flexDirection: "column",
         gap: 2,
-        width: 360,
+        width: "80%",
+        maxWidth: 360,
+        "&:hover": {
+          transition: "all 0.2s ease-in-out",
+          transform: "scale(1.01)",
+        },
       }}
     >
       <PostedCard days={10} />
@@ -76,7 +68,7 @@ const JobPost = () => {
       </div>
       <span style={{ fontWeight: 300, fontSize: 14 }}>
         Estimated Salary:{" "}
-        {jobData?.salaryCurrencyCode &&
+        {jobData.salaryCurrencyCode &&
           getCurrencySymbol(jobData.salaryCurrencyCode)}
         {minSalary} - {maxSalary}
       </span>
@@ -91,8 +83,8 @@ const JobPost = () => {
       <div className={classes.experienceDetails}>
         <span>Mimimum Experience</span>
         <span style={{ fontWeight: 300 }}>
-          {jobData?.minExp ?? 0} year
-          {jobData?.minExp && jobData?.minExp > 1 ? "s" : ""}
+          {jobData.minExp ?? 0} year
+          {jobData.minExp && jobData?.minExp > 1 ? "s" : ""}
         </span>
       </div>
       <EasyApplyButton />

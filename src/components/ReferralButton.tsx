@@ -13,6 +13,9 @@ const ReferralButton = () => {
         textTransform: "none",
         fontSize: 16,
         gap: 1,
+        "&:hover": {
+          backgroundColor: "#4943da",
+        },
       }}
     >
       <Avatar

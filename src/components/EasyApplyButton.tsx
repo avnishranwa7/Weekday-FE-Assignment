@@ -11,6 +11,9 @@ const EasyApplyButton = () => {
         color: "black",
         textTransform: "none",
         fontSize: 16,
+        "&:hover": {
+          backgroundColor: "#55efc4",
+        },
       }}
     >
       ⚡ Easy Apply
