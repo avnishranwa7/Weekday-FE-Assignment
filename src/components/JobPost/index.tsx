@@ -1,5 +1,5 @@
 import { FC } from "react";
-import Card from "@mui/material/Card";
+import { Card, Tooltip } from "@mui/material";
 
 // styles imports
 import classes from "./index.module.css";
@@ -66,11 +66,27 @@ const JobPost: FC<Props> = ({ jobData }) => {
           <span className={classes.jobLocation}>{jobData?.location}</span>
         </div>
       </div>
-      <span style={{ fontWeight: 300, fontSize: 14 }}>
+      <span
+        style={{
+          fontWeight: 300,
+          fontSize: 14,
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
         Estimated Salary:{" "}
         {jobData.salaryCurrencyCode &&
           getCurrencySymbol(jobData.salaryCurrencyCode)}
         {minSalary} - {maxSalary}
+        {!jobData.minJdSalary || !jobData.maxJdSalary ? (
+          <Tooltip title="Estimated by Weekday, Not provided by employer">
+            <span style={{ marginLeft: 6, cursor: "default" }}>⚠️</span>
+          </Tooltip>
+        ) : (
+          <Tooltip title="Offered salary range">
+            <span style={{ marginLeft: 6, cursor: "default" }}>✅</span>
+          </Tooltip>
+        )}
       </span>
       <div className={classes.companyDetails}>
         <span>About the Company:</span>

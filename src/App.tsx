@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Grid } from "@mui/material";
 
 // local imports
@@ -6,6 +6,7 @@ import classes from "./App.module.css";
 import JobPost from "./components/JobPost";
 import { JobData } from "./components/JobPost/types";
 import LoadingCard from "./components/LoadingCard";
+import Filters from "./components/Filters";
 
 function getGridColumns() {
   const width = window.innerWidth;
@@ -45,7 +46,6 @@ function App() {
   const loadData = useCallback(async () => {
     setLoading(true);
     const newData = await getJobData(jobData.length);
-    console.log(newData);
     setLoading(false);
     setJobData((prev) => [...prev, ...newData.jdList]);
   }, [jobData.length]);
@@ -69,8 +69,14 @@ function App() {
     return () => window.removeEventListener("scroll", handleReachEnd);
   }, [handleReachEnd, loadData]);
 
+  const roles = useMemo(
+    () => Array.from(new Set(jobData.map((job) => job.jobRole))),
+    [jobData]
+  );
+
   return (
     <div className={classes.root}>
+      <Filters roles={roles} />
       <Grid container columnSpacing={1} rowSpacing={5}>
         {jobData.map((job) => (
           <Grid
